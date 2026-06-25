@@ -16,7 +16,7 @@ A completed Windows Server lab in which I installed and configured DHCP, created
 - Configured the address pool and exclusions
 - Applied gateway, DNS and domain-name options
 - Created a device reservation
-- Released and renewed client leases
+- Renewed client leases
 - Reviewed active leases and DHCP events
 - Documented troubleshooting findings
 
@@ -34,18 +34,18 @@ A completed Windows Server lab in which I installed and configured DHCP, created
 
 ## Validation commands
 
+Set `$ScopeId` to the network address of the scope used in the lab before running the commands:
+
 ```powershell
-Get-DhcpServerv4Scope
-Get-DhcpServerv4OptionValue -ScopeId <scope-id>
-Get-DhcpServerv4Lease -ScopeId <scope-id>
-Get-DhcpServerv4Reservation -ScopeId <scope-id>
+$ScopeId = '10.10.20.0'
+
+Get-DhcpServerv4Scope -ScopeId $ScopeId
+Get-DhcpServerv4OptionValue -ScopeId $ScopeId
+Get-DhcpServerv4Lease -ScopeId $ScopeId
+Get-DhcpServerv4Reservation -ScopeId $ScopeId
 ```
 
-```cmd
-ipconfig /release
-ipconfig /renew
-ipconfig /all
-```
+On the test client, renew the DHCP lease through the approved support workflow and review the resulting IP configuration. Confirm that the address belongs to the intended scope, does not overlap an exclusion, and includes the expected gateway, DNS server and DNS suffix.
 
 ## Outcome
 
@@ -56,7 +56,7 @@ The DHCP server successfully issued valid network settings to the Windows client
 - A correctly created scope did not issue addresses until it was activated and the DHCP server was authorized.
 - Exclusions and reservations served different purposes: exclusions removed addresses from dynamic allocation, while reservations tied an address to a specific client.
 - DHCP option 006 was critical in the domain lab because clients needed the internal DNS server rather than a public resolver.
-- A client could retain an older lease until it was renewed, which made `ipconfig /release` and `ipconfig /renew` useful during validation.
+- A client could retain an older lease until it was renewed.
 - Reviewing both the client configuration and the server lease table gave stronger evidence than checking only one side.
 - Careful scope planning prevented accidental overlap with statically addressed infrastructure devices.
 
@@ -68,13 +68,13 @@ The DHCP server successfully issued valid network settings to the Windows client
 - DHCP options and reservations
 - Active Directory authorization
 - Client lease troubleshooting
-- PowerShell and command-line validation
+- PowerShell validation
 - Technical documentation
 
 ## Security notes
 
 - No real production addressing is included.
-- All network values shown in examples are placeholders.
+- All network values shown in examples are sanitized lab examples.
 - The lab was completed in a controlled non-production environment.
 
 ## Author
